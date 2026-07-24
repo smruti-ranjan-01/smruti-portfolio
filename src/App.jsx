@@ -3,7 +3,9 @@ import {
   Mail, Menu, X, Send, Cpu, Award, Download,
   Home, MessageCircle, CloudSun, Gamepad2, Grid3x3, Target, ExternalLink,
   GitBranch, Code2, CircleDashed, Zap, Sparkles, Rocket,
-  FileText, Triangle, Bot, Activity, Globe
+  FileText, Triangle, Bot, Activity, Globe,
+  Coffee, Terminal, Braces, Database, Flame, Flower2, Network,
+  Layers, Share2, FileCode, Palette, Wind, Atom, Hexagon, Leaf, Box, Link2, Binary
 } from "lucide-react";
 
 /* Lucide 1.0 removed brand icons (GitHub, LinkedIn, etc). Small inline replacements. */
@@ -321,23 +323,97 @@ function Projects() {
 }
 
 /* ---------------- skills (tagline style, not big cards) ---------------- */
+/* ---------------- skills (6 wide cards, each with nested skill chips) ---------------- */
+function SkillChip({ icon: Icon, name }) {
+  return (
+    <div
+      className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
+      style={{ backgroundColor: C.surface2, border: `1px solid ${C.line}` }}
+    >
+      <div
+        className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+        style={{ background: `linear-gradient(135deg, ${C.violet}, ${C.cyan})` }}
+      >
+        <Icon size={14} color={C.bg} />
+      </div>
+      <span className="text-xs font-mono" style={{ color: C.text }}>{name}</span>
+    </div>
+  );
+}
+
+function SkillGroupCard({ label, skills }) {
+  return (
+    <div className="p-6 rounded-xl" style={{ backgroundColor: C.surface, border: `1px solid ${C.line}` }}>
+      <div className="text-base font-semibold mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>{label}</div>
+      <div className="flex flex-wrap gap-2.5">
+        {skills.map((s) => (
+          <SkillChip key={s.name} {...s} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Skills() {
   const groups = [
-    { label: "Languages", items: "C · Java · Python · JavaScript · SQL" },
-    { label: "ML / Research", items: "PyTorch · Flower (flwr) · Federated Learning · Model Quantization · Distributed Systems" },
-    { label: "Web Technologies", items: "HTML · CSS · Tailwind CSS" },
-    { label: "Frameworks", items: "React.js · Node.js · Express.js" },
-    { label: "Databases", items: "MongoDB · MySQL" },
-    { label: "Core Concepts", items: "Data Structures & Algorithms · OOP · DBMS · REST APIs" },
+    {
+      label: "Languages",
+      skills: [
+        { icon: Cpu, name: "C" },
+        { icon: Coffee, name: "Java" },
+        { icon: Terminal, name: "Python" },
+        { icon: Braces, name: "JavaScript" },
+        { icon: Database, name: "SQL" },
+      ],
+    },
+    {
+      label: "ML / Research",
+      skills: [
+        { icon: Flame, name: "PyTorch" },
+        { icon: Flower2, name: "Flower (flwr)" },
+        { icon: Network, name: "Federated Learning" },
+        { icon: Layers, name: "Model Quantization" },
+        { icon: Share2, name: "Distributed Systems" },
+      ],
+    },
+    {
+      label: "Web Technologies",
+      skills: [
+        { icon: FileCode, name: "HTML" },
+        { icon: Palette, name: "CSS" },
+        { icon: Wind, name: "Tailwind CSS" },
+      ],
+    },
+    {
+      label: "Frameworks",
+      skills: [
+        { icon: Atom, name: "React.js" },
+        { icon: Hexagon, name: "Node.js" },
+        { icon: Zap, name: "Express.js" },
+      ],
+    },
+    {
+      label: "Databases",
+      skills: [
+        { icon: Leaf, name: "MongoDB" },
+        { icon: Database, name: "MySQL" },
+      ],
+    },
+    {
+      label: "Core Concepts",
+      skills: [
+        { icon: Binary, name: "Data Structures & Algorithms" },
+        { icon: Box, name: "OOP" },
+        { icon: Database, name: "DBMS" },
+        { icon: Link2, name: "REST APIs" },
+      ],
+    },
   ];
   return (
     <Section id="skills" eyebrow="Skills" title="Toolkit">
-      <div className="space-y-4">
+      <div className="space-y-5">
         {groups.map((g) => (
-          <div key={g.label} className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 py-3" style={{ borderBottom: `1px solid ${C.line}` }}>
-            <div className="w-40 text-sm font-semibold flex-shrink-0" style={{ color: C.text }}>{g.label}</div>
-            <div className="text-sm font-mono" style={{ color: C.muted }}>{g.items}</div>
-          </div>
+          <SkillGroupCard key={g.label} {...g} />
         ))}
       </div>
     </Section>
