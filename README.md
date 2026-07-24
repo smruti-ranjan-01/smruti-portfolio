@@ -2,7 +2,7 @@
 
 My personal portfolio site, showcasing my research work in federated learning and my full-stack projects.
 
-**Live site:** https://smrutiranjanpattanaik-portfolio.vercel.app
+[Live site] (https://smrutiranjanpattanaik-portfolio.vercel.app)
 
 ## About
 
