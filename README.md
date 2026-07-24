@@ -1,16 +1,46 @@
-# React + Vite
+# Smruti Ranjan Pattanaik — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+My personal portfolio site, showcasing my research work in federated learning and my full-stack projects.
 
-Currently, two official plugins are available:
+**Live site:** https://smrutiranjanpattanaik-portfolio.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## About
 
-## React Compiler
+Third-year CS student at Siksha 'O' Anusandhan University, currently a Research Intern at IIT Bhubaneswar working on Byzantine-resilient federated learning. This site covers my background, projects, skills, tools, and achievements, with a contact form for reaching out directly.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **React** — UI
+- **Tailwind CSS v4** — styling
+- **Vite** — build tool
+- **lucide-react** — icons
+- **Formspree** — contact form backend
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Features
+
+- Animated federated-learning-inspired network visual in the hero
+- Featured work strip + full project grid, each card linking to a live demo or GitHub repo
+- Skills, tools, and achievements sections
+- Working contact form (via Formspree)
+- Fully responsive layout
+
+## Running Locally
+
+```bash
+git clone https://github.com/smruti-ranjan-01/smruti-portfolio.git
+cd smruti-portfolio
+npm install
+npm run dev
+```
+
+Open the printed local URL (usually `http://localhost:5173`) in your browser.
+
+## Deployment
+
+Deployed on [Vercel](https://vercel.com), auto-redeploying on every push to `main`.
+
+## Contact
+
+- Email: pattanaiksmrutiranjan1@gmail.com
+- GitHub: [smruti-ranjan-01](https://github.com/smruti-ranjan-01)
+- LinkedIn: [smruti-ranjan-pattanaik](https://www.linkedin.com/in/smruti-ranjan-pattanaik-815a2537a)
