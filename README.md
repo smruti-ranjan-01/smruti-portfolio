@@ -1,8 +1,10 @@
 # Smruti Ranjan Pattanaik — Portfolio
 
 My personal portfolio site, showcasing my research work in federated learning and my full-stack projects.
+## 🌐 Live Demo
 
-**Live site:** https://smrutiranjanpattanaik-portfolio.vercel.app
+👉 [View the Live Website](https://smrutiranjanpattanaik-portfolio.vercel.app)
+
 
 ## About
 
