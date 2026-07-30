@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Mail, Menu, X, Send, Cpu, Award, Download,
+  Mail, Send, Cpu, Award, Download,
   Home, MessageCircle, CloudSun, Gamepad2, Grid3x3, Target, ExternalLink,
   GitBranch, Code2, CircleDashed, Zap, Sparkles, Rocket,
   FileText, Triangle, Bot, Activity, Globe,
   Coffee, Terminal, Braces, Database, Flame, Flower2, Network,
-  Layers, Share2, FileCode, Palette, Wind, Atom, Hexagon, Leaf, Box, Link2, Binary
+  Layers, Share2, FileCode, Palette, Wind, Atom, Hexagon, Leaf, Box, Link2, Binary, Wrench
 } from "lucide-react";
+import { motion, MotionConfig } from "framer-motion";
 
 /* Lucide 1.0 removed brand icons (GitHub, LinkedIn, etc). Small inline replacements. */
 function GithubMark({ size = 16, color = "currentColor" }) {
@@ -40,6 +41,22 @@ const C = {
   cyan: "#22D3EE",
   text: "#E7E9F0",
   muted: "#8B93A7",
+};
+
+/* ---------------------------------------------------------
+   MOTION — one reveal language reused everywhere.
+   revealParent: no visual change of its own, just times
+   its children (staggerChildren). revealChild: the actual
+   fade/rise. Nest a revealParent inside a revealChild to
+   cascade section -> grid -> card as one sequence.
+--------------------------------------------------------- */
+const revealParent = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.04 } },
+};
+const revealChild = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
 };
 
 /* ---------------- ambient network (small, hero-only accent) ---------------- */
@@ -101,30 +118,83 @@ function NetworkAccent() {
 }
 
 /* ---------------- nav ---------------- */
-function Nav() {
-  const [open, setOpen] = useState(false);
-  const links = [["Projects", "#projects"], ["Skills", "#skills"], ["Tools", "#tools"], ["Achievements", "#achievements"], ["Contact", "#contact"]];
+function BrandMark() {
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md" style={{ backgroundColor: "rgba(10,13,20,0.75)", borderBottom: `1px solid ${C.line}` }}>
-      <div className="max-w-5xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
-        <a href="#top" className="font-mono text-sm tracking-widest" style={{ color: C.text }}>SR<span style={{ color: C.violet }}>.</span>P</a>
-        <nav className="hidden md:flex items-center gap-8">
-          {links.map(([l, h]) => (
-            <a key={h} href={h} className="text-sm" style={{ color: C.muted, fontFamily: "'Inter', sans-serif" }}
-               onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
-               onMouseLeave={(e) => (e.currentTarget.style.color = C.muted)}>{l}</a>
-          ))}
-        </nav>
-        <button className="md:hidden" onClick={() => setOpen(!open)} style={{ color: C.text }}>
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-      {open && (
-        <div className="md:hidden px-6 pb-4 flex flex-col gap-4" style={{ borderTop: `1px solid ${C.line}` }}>
-          {links.map(([l, h]) => <a key={h} href={h} onClick={() => setOpen(false)} className="text-sm pt-4" style={{ color: C.muted }}>{l}</a>)}
-        </div>
-      )}
-    </header>
+    <motion.a
+      href="#top"
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="fixed top-6 left-6 md:left-10 z-50 font-mono text-sm tracking-widest"
+      style={{ color: C.text }}
+    >
+      SR<span style={{ color: C.violet }}>.</span>P
+    </motion.a>
+  );
+}
+
+const NAV_LINKS = [
+  ["Home", "#top", Home],
+  ["Projects", "#projects", Code2],
+  ["Skills", "#skills", Sparkles],
+  ["Tools", "#tools", Wrench],
+  ["Achievements", "#achievements", Award],
+  ["Contact", "#contact", Mail],
+];
+
+function Nav() {
+  const [active, setActive] = useState("#top");
+
+  useEffect(() => {
+    const sections = NAV_LINKS
+      .map(([, h]) => document.getElementById(h.slice(1)))
+      .filter(Boolean);
+    if (!sections.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <motion.nav
+      initial={{ y: 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+      className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 px-2 py-2 rounded-full backdrop-blur-md max-w-[94vw] overflow-x-auto"
+      style={{ backgroundColor: "rgba(18,22,31,0.85)", border: `1px solid ${C.line}` }}
+    >
+      {NAV_LINKS.map(([label, href, Icon]) => {
+        const isActive = active === href;
+        return (
+          <a
+            key={href}
+            href={href}
+            className="relative flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap"
+            style={{ color: isActive ? C.bg : C.muted }}
+          >
+            {isActive && (
+              <motion.span
+                layoutId="nav-active-pill"
+                className="absolute inset-0 rounded-full"
+                style={{ background: `linear-gradient(135deg, ${C.violet}, ${C.cyan})` }}
+                transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              />
+            )}
+            <span className="relative z-10 flex items-center gap-1.5">
+              <Icon size={15} />
+              <span className="hidden sm:inline">{label}</span>
+            </span>
+          </a>
+        );
+      })}
+    </motion.nav>
   );
 }
 
@@ -133,8 +203,14 @@ function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
       <div className="absolute inset-0 opacity-60"><NetworkAccent /></div>
-      <div className="relative max-w-5xl mx-auto px-6 md:px-10 pt-20 pb-16 md:pt-28 md:pb-20 flex flex-col md:flex-row items-center gap-10">
-        <div
+      <motion.div
+        className="relative max-w-5xl mx-auto px-6 md:px-10 pt-20 pb-16 md:pt-28 md:pb-20 flex flex-col md:flex-row items-center gap-10"
+        initial="hidden"
+        animate="show"
+        variants={revealParent}
+      >
+        <motion.div
+          variants={revealChild}
           className="w-32 h-32 md:w-40 md:h-40 rounded-2xl flex-shrink-0 overflow-hidden"
           style={{ background: `linear-gradient(135deg, ${C.violet}, ${C.cyan})`, padding: 3 }}
         >
@@ -144,8 +220,8 @@ function Hero() {
             className="w-full h-full object-cover rounded-xl"
             style={{ backgroundColor: C.bg }}
           />
-        </div>
-        <div>
+        </motion.div>
+        <motion.div variants={revealChild}>
           <h1 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>
             Hey, I'm Smruti Ranjan Pattanaik.
           </h1>
@@ -159,17 +235,20 @@ function Hero() {
             <a href="#contact" className="text-sm font-medium underline underline-offset-4" style={{ color: C.cyan }}>Get in touch</a>
             <span style={{ color: C.line }}>·</span>
             {/* Replace href with your actual resume file path, e.g. "/resume.pdf" */}
-            <a
+            <motion.a
               href="/resume.pdf"
               download
-              className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-md"
-              style={{ backgroundColor: C.surface, border: `1px solid ${C.line}`, color: C.text }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full"
+              style={{ backgroundColor: "#F4F5F7", color: C.bg }}
             >
               <Download size={14} /> Resume
-            </a>
+            </motion.a>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
@@ -184,15 +263,28 @@ function Featured() {
   return (
     <div className="max-w-5xl mx-auto px-6 md:px-10 pb-16">
       <div className="font-mono text-xs tracking-[0.2em] uppercase mb-4" style={{ color: C.cyan }}>Featured Work</div>
-      <div className="grid md:grid-cols-3 gap-4">
+      <motion.div
+        className="grid md:grid-cols-3 gap-4"
+        variants={revealParent}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.3 }}
+      >
         {items.map((it) => (
-          <a key={it.name} href={it.href} className="block p-5 rounded-xl transition-transform hover:-translate-y-1"
-             style={{ backgroundColor: C.surface, border: `1px solid ${C.line}` }}>
+          <motion.a
+            key={it.name}
+            href={it.href}
+            variants={revealChild}
+            whileHover={{ y: -4 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="block p-5 rounded-xl"
+            style={{ backgroundColor: C.surface, border: `1px solid ${C.line}` }}
+          >
             <div className="text-sm font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>{it.name}</div>
             <div className="text-xs mt-2" style={{ color: C.muted }}>{it.tag}</div>
-          </a>
+          </motion.a>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -200,12 +292,21 @@ function Featured() {
 /* ---------------- section shell ---------------- */
 function Section({ id, eyebrow, title, sub, children }) {
   return (
-    <section id={id} className="px-6 md:px-10 py-16 max-w-5xl mx-auto">
-      {eyebrow && <div className="font-mono text-xs tracking-[0.2em] uppercase mb-3" style={{ color: C.cyan }}>{eyebrow}</div>}
-      {title && <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>{title}</h2>}
-      {sub && <p className="mt-2 text-sm max-w-xl" style={{ color: C.muted }}>{sub}</p>}
-      <div className="mt-8">{children}</div>
-    </section>
+    <motion.section
+      id={id}
+      className="px-6 md:px-10 py-16 max-w-5xl mx-auto"
+      variants={revealParent}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+    >
+      <motion.div variants={revealChild}>
+        {eyebrow && <div className="font-mono text-xs tracking-[0.2em] uppercase mb-3" style={{ color: C.cyan }}>{eyebrow}</div>}
+        {title && <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>{title}</h2>}
+        {sub && <p className="mt-2 text-sm max-w-xl" style={{ color: C.muted }}>{sub}</p>}
+      </motion.div>
+      <motion.div className="mt-8" variants={revealChild}>{children}</motion.div>
+    </motion.section>
   );
 }
 
@@ -214,7 +315,7 @@ function ProjectTile({ icon: Icon, title, desc, stack, href, onClick }) {
   const isLink = Boolean(href);
   const isInternal = isLink && href.startsWith("#");
   const isClickable = Boolean(onClick);
-  const Wrapper = isLink ? "a" : "div";
+  const Wrapper = isLink ? motion.a : motion.div;
   const wrapperProps = isLink
     ? isInternal
       ? { href }
@@ -222,10 +323,14 @@ function ProjectTile({ icon: Icon, title, desc, stack, href, onClick }) {
     : isClickable
     ? { onClick, role: "button", tabIndex: 0 }
     : {};
+  const badge = isClickable ? "Info" : isInternal ? "View" : href && href.includes("github.com") ? "Repo" : isLink ? "Live" : null;
   return (
     <Wrapper
       {...wrapperProps}
-      className={`group block p-7 rounded-xl transition-transform hover:-translate-y-1 ${isClickable ? "cursor-pointer" : ""}`}
+      variants={revealChild}
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className={`group block p-7 rounded-xl ${isClickable ? "cursor-pointer" : ""}`}
       style={{ backgroundColor: C.surface, border: `1px solid ${C.line}` }}
     >
       <div className="flex items-start justify-between">
@@ -235,12 +340,13 @@ function ProjectTile({ icon: Icon, title, desc, stack, href, onClick }) {
         >
           <Icon size={20} color={C.bg} />
         </div>
-        {(isLink || isClickable) && (
-          <ExternalLink
-            size={15}
-            style={{ color: C.muted }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-          />
+        {badge && (
+          <span
+            className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full"
+            style={{ backgroundColor: "#F4F5F7", color: C.bg }}
+          >
+            {badge} <ExternalLink size={11} />
+          </span>
         )}
       </div>
       <div className="text-lg font-semibold" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>{title}</div>
@@ -313,30 +419,33 @@ function Projects() {
   ];
   return (
     <Section id="projects" eyebrow="Projects" title="My Projects" sub="A few things I've built, research and full-stack alike.">
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <motion.div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4" variants={revealParent}>
         {projects.map((p) => (
           <ProjectTile key={p.title} {...p} />
         ))}
-      </div>
+      </motion.div>
     </Section>
   );
 }
 
 /* ---------------- skills (tagline style, not big cards) ---------------- */
 /* ---------------- skills (6 wide cards, each with nested skill chips) ---------------- */
-function SkillChip({ icon: Icon, name }) {
+function SkillChip({ icon: Icon, name, level }) {
   return (
     <div
-      className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
+      className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
       style={{ backgroundColor: C.surface2, border: `1px solid ${C.line}` }}
     >
       <div
-        className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+        className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
         style={{ background: `linear-gradient(135deg, ${C.violet}, ${C.cyan})` }}
       >
-        <Icon size={14} color={C.bg} />
+        <Icon size={15} color={C.bg} />
       </div>
-      <span className="text-xs font-mono" style={{ color: C.text }}>{name}</span>
+      <div className="flex flex-col leading-tight">
+        <span className="text-xs font-mono" style={{ color: C.text }}>{name}</span>
+        {level && <span className="text-[10px] font-mono mt-0.5" style={{ color: C.muted }}>{level}</span>}
+      </div>
     </div>
   );
 }
@@ -359,63 +468,65 @@ function Skills() {
     {
       label: "Languages",
       skills: [
-        { icon: Cpu, name: "C" },
-        { icon: Coffee, name: "Java" },
-        { icon: Terminal, name: "Python" },
-        { icon: Braces, name: "JavaScript" },
-        { icon: Database, name: "SQL" },
+        { icon: Cpu, name: "C", level: "Intermediate" },
+        { icon: Coffee, name: "Java", level: "Advanced" },
+        { icon: Terminal, name: "Python", level: "Advanced" },
+        { icon: Braces, name: "JavaScript", level: "Intermediate" },
+        { icon: Database, name: "SQL", level: "Intermediate" },
       ],
     },
     {
       label: "ML / Research",
       skills: [
-        { icon: Flame, name: "PyTorch" },
-        { icon: Flower2, name: "Flower (flwr)" },
-        { icon: Network, name: "Federated Learning" },
-        { icon: Layers, name: "Model Quantization" },
-        { icon: Share2, name: "Distributed Systems" },
+        { icon: Flame, name: "PyTorch", level: "Advanced" },
+        { icon: Flower2, name: "Flower (flwr)", level: "Advanced" },
+        { icon: Network, name: "Federated Learning", level: "Advanced" },
+        { icon: Layers, name: "Model Quantization", level: "Intermediate" },
+        { icon: Share2, name: "Distributed Systems", level: "Intermediate" },
       ],
     },
     {
       label: "Web Technologies",
       skills: [
-        { icon: FileCode, name: "HTML" },
-        { icon: Palette, name: "CSS" },
-        { icon: Wind, name: "Tailwind CSS" },
+        { icon: FileCode, name: "HTML", level: "Advanced" },
+        { icon: Palette, name: "CSS", level: "Intermediate" },
+        { icon: Wind, name: "Tailwind CSS", level: "Advanced" },
       ],
     },
     {
       label: "Frameworks",
       skills: [
-        { icon: Atom, name: "React.js" },
-        { icon: Hexagon, name: "Node.js" },
-        { icon: Zap, name: "Express.js" },
+        { icon: Atom, name: "React.js", level: "Advanced" },
+        { icon: Hexagon, name: "Node.js", level: "Intermediate" },
+        { icon: Zap, name: "Express.js", level: "Intermediate" },
       ],
     },
     {
       label: "Databases",
       skills: [
-        { icon: Leaf, name: "MongoDB" },
-        { icon: Database, name: "MySQL" },
+        { icon: Leaf, name: "MongoDB", level: "Intermediate" },
+        { icon: Database, name: "MySQL", level: "Intermediate" },
       ],
     },
     {
       label: "Core Concepts",
       skills: [
-        { icon: Binary, name: "Data Structures & Algorithms" },
-        { icon: Box, name: "OOP" },
-        { icon: Database, name: "DBMS" },
-        { icon: Link2, name: "REST APIs" },
+        { icon: Binary, name: "Data Structures & Algorithms", level: "Advanced" },
+        { icon: Box, name: "OOP", level: "Advanced" },
+        { icon: Database, name: "DBMS", level: "Intermediate" },
+        { icon: Link2, name: "REST APIs", level: "Intermediate" },
       ],
     },
   ];
   return (
     <Section id="skills" eyebrow="Skills" title="Toolkit">
-      <div className="space-y-5">
+      <motion.div className="space-y-5" variants={revealParent}>
         {groups.map((g) => (
-          <SkillGroupCard key={g.label} {...g} />
+          <motion.div key={g.label} variants={revealChild}>
+            <SkillGroupCard {...g} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </Section>
   );
 }
@@ -424,7 +535,7 @@ function Skills() {
 function ToolCard({ icon: Icon, name }) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-3 p-5 rounded-xl transition-transform hover:-translate-y-1"
+      className="flex flex-col items-center justify-center gap-3 p-5 rounded-xl"
       style={{ backgroundColor: C.surface, border: `1px solid ${C.line}` }}
     >
       <div
@@ -454,11 +565,18 @@ function Tools() {
   ];
   return (
     <Section id="tools" eyebrow="Tools" title="What I Build With" sub="Day-to-day tools across dev, testing, and AI-assisted work.">
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+      <motion.div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4" variants={revealParent}>
         {tools.map((t) => (
-          <ToolCard key={t.name} {...t} />
+          <motion.div
+            key={t.name}
+            variants={revealChild}
+            whileHover={{ y: -4 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <ToolCard {...t} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </Section>
   );
 }
@@ -476,22 +594,43 @@ function Achievements() {
   ];
   return (
     <Section id="achievements" eyebrow="Achievements" title="Recognition">
-      <div className="space-y-3">
+      <motion.div className="space-y-3" variants={revealParent}>
         {items.map((a) => (
-          <div key={a.title} className="flex items-start gap-3 py-3" style={{ borderBottom: `1px solid ${C.line}` }}>
+          <motion.div key={a.title} variants={revealChild} className="flex items-start gap-3 py-3" style={{ borderBottom: `1px solid ${C.line}` }}>
             <Award size={16} style={{ color: C.cyan, marginTop: 3, flexShrink: 0 }} />
             <div>
               <span className="text-sm font-semibold" style={{ color: C.text }}>{a.title}</span>
               <span className="text-sm ml-2" style={{ color: C.muted }}>— {a.note}</span>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </Section>
   );
 }
 
 /* ---------------- contact: real form ---------------- */
+function ContactPill({ label, value, icon: Icon, href, download }) {
+  const isExternal = href.startsWith("http");
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-sm" style={{ color: C.muted }}>{label}</span>
+      <motion.a
+        href={href}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.97 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        {...(download ? { download: true } : {})}
+        {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full"
+        style={{ backgroundColor: "#F4F5F7", color: C.bg }}
+      >
+        {value} <Icon size={14} />
+      </motion.a>
+    </div>
+  );
+}
+
 function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
@@ -519,8 +658,8 @@ function Contact() {
 
   return (
     <Section id="contact" eyebrow="Contact" title="Contact Me" sub="Open to research collaborations, SDE roles, or just a chat.">
-      <div className="grid md:grid-cols-2 gap-10">
-        <form onSubmit={submit} className="space-y-4">
+      <motion.div className="grid md:grid-cols-2 gap-10" variants={revealParent}>
+        <motion.form variants={revealChild} onSubmit={submit} className="space-y-4">
           <div>
             <label className="text-xs font-mono" style={{ color: C.muted }}>Your Name</label>
             <input
@@ -554,23 +693,15 @@ function Contact() {
           </button>
           {sent && <p className="text-xs" style={{ color: C.cyan }}>Thanks — your message has been sent.</p>}
           {error && <p className="text-xs" style={{ color: "#F87171" }}>Something went wrong — please try again or email me directly.</p>}
-        </form>
+        </motion.form>
 
-        <div className="flex flex-col justify-center gap-3">
-          <a href="mailto:pattanaiksmrutiranjan1@gmail.com" className="flex items-center gap-3 text-sm" style={{ color: C.muted }}>
-            <Mail size={16} style={{ color: C.cyan }} /> pattanaiksmrutiranjan1@gmail.com
-          </a>
-          <a href="https://github.com/smruti-ranjan-01" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm" style={{ color: C.muted }}>
-            <GithubMark size={16} color={C.cyan} /> GitHub
-          </a>
-          <a href="https://www.linkedin.com/in/smruti-ranjan-pattanaik-815a2537a" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm" style={{ color: C.muted }}>
-            <LinkedinMark size={16} color={C.cyan} /> LinkedIn
-          </a>
-          <a href="/resume.pdf" download className="flex items-center gap-3 text-sm" style={{ color: C.muted }}>
-            <Download size={16} style={{ color: C.cyan }} /> Download Resume
-          </a>
-        </div>
-      </div>
+        <motion.div variants={revealChild} className="flex flex-col justify-center gap-4">
+          <ContactPill label="Drop a line at" value="Mail" icon={Mail} href="mailto:pattanaiksmrutiranjan1@gmail.com" />
+          <ContactPill label="See my work at" value="GitHub" icon={GithubMark} href="https://github.com/smruti-ranjan-01" />
+          <ContactPill label="Let's connect" value="LinkedIn" icon={LinkedinMark} href="https://www.linkedin.com/in/smruti-ranjan-pattanaik-815a2537a" />
+          <ContactPill label="View my resume" value="Resume" icon={Download} href="/resume.pdf" download />
+        </motion.div>
+      </motion.div>
     </Section>
   );
 }
@@ -585,23 +716,26 @@ function Footer() {
 
 export default function Portfolio() {
   return (
-    <div style={{ backgroundColor: C.bg, minHeight: "100vh" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-        * { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { margin: 0; }
-        input::placeholder, textarea::placeholder { color: #5B6478; }
-      `}</style>
-      <Nav />
-      <Hero />
-      <Featured />
-      <Projects />
-      <Skills />
-      <Tools />
-      <Achievements />
-      <Contact />
-      <Footer />
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div style={{ backgroundColor: C.bg, minHeight: "100vh", paddingBottom: 96 }}>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+          * { box-sizing: border-box; }
+          html { scroll-behavior: smooth; }
+          body { margin: 0; }
+          input::placeholder, textarea::placeholder { color: #5B6478; }
+        `}</style>
+        <BrandMark />
+        <Hero />
+        <Featured />
+        <Projects />
+        <Skills />
+        <Tools />
+        <Achievements />
+        <Contact />
+        <Footer />
+        <Nav />
+      </div>
+    </MotionConfig>
   );
 }
