@@ -708,8 +708,18 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="px-6 md:px-10 py-8 max-w-5xl mx-auto text-center" style={{ borderTop: `1px solid ${C.line}` }}>
+    <footer className="px-6 md:px-10 py-8 max-w-5xl mx-auto flex flex-col items-center gap-3 text-center" style={{ borderTop: `1px solid ${C.line}` }}>
+      <img src="/qr-linktree.svg" alt="Scan to open my links page" className="w-20 h-20 rounded-xl" />
       <div className="font-mono text-xs" style={{ color: C.muted }}>© {new Date().getFullYear()} Smruti Ranjan Pattanaik. All rights reserved.</div>
+      
+        href="https://my-linktree-bay.vercel.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-mono text-xs underline underline-offset-4"
+        style={{ color: C.cyan }}
+      >
+        More links →
+      </a>
     </footer>
   );
 }
