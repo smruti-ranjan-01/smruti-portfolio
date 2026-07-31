@@ -199,20 +199,28 @@ function Nav() {
 }
 
 /* ---------------- hero: casual, photo + one-line intro ---------------- */
+/* ---------------- Hero ---------------- */
 function Hero() {
   return (
     <section id="top" className="relative overflow-hidden">
-      <div className="absolute inset-0 opacity-60"><NetworkAccent /></div>
+      <div className="absolute inset-0 opacity-60">
+        <NetworkAccent />
+      </div>
+
       <motion.div
-        className="relative max-w-5xl mx-auto px-6 md:px-10 pt-20 pb-16 md:pt-28 md:pb-20 flex flex-col md:flex-row items-center gap-10"
+        className="relative max-w-5xl mx-auto px-6 md:px-10 pt-20 pb-24 md:pt-28 md:pb-20 flex flex-col md:flex-row items-center gap-10"
         initial="hidden"
         animate="show"
         variants={revealParent}
       >
+        {/* Profile Photo */}
         <motion.div
           variants={revealChild}
           className="w-32 h-32 md:w-40 md:h-40 rounded-2xl flex-shrink-0 overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${C.violet}, ${C.cyan})`, padding: 3 }}
+          style={{
+            background: `linear-gradient(135deg, ${C.violet}, ${C.cyan})`,
+            padding: 3,
+          }}
         >
           <img
             src="/profile.jpeg"
@@ -221,30 +229,108 @@ function Hero() {
             style={{ backgroundColor: C.bg }}
           />
         </motion.div>
+
+        {/* Hero Content */}
         <motion.div variants={revealChild}>
-          <h1 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif", color: C.text }}>
+          <h1
+            className="text-3xl md:text-4xl font-bold"
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              color: C.text,
+            }}
+          >
             Hey, I'm Smruti Ranjan Pattanaik.
           </h1>
-          <p className="mt-3 text-base md:text-lg max-w-xl leading-relaxed" style={{ color: C.muted, fontFamily: "'Inter', sans-serif" }}>
-            I build distributed systems and full-stack products — here's what I'm working on,
-            currently researching Byzantine-resilient federated learning at IIT Bhubaneswar.
+
+          <div
+            className="mt-2 flex flex-col gap-y-1 md:flex-row md:flex-wrap md:items-center md:gap-x-2 font-mono text-xs md:text-sm"
+            style={{ color: C.muted }}
+          >
+            {[
+              // <b>
+              "SOA '27",
+              "Ex Federated Learning Researcher @ IIT Bhubaneswar",
+              "MERN Stack Developer",
+              "Competitive Programmer",
+              "Incoming SDE @ TCS",
+            // </b>
+            ].map((role, index) => (
+              <span key={role} className="flex items-center gap-2">
+                {index > 0 && (
+                  <span
+                    className="hidden md:inline"
+                    style={{ color: C.line }}
+                  >
+                    |
+                  </span>
+                )}
+                {role}
+              </span>
+            ))}
+          </div>
+
+          <p
+            className="mt-4 text-base md:text-lg max-w-2xl leading-relaxed"
+            style={{
+              color: C.muted,
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            I'm a Computer Science undergraduate passionate about full-stack development, Data Structures & Algorithms, distributed systems, and AI-driven solutions.
+             I recently completed a research internship on Byzantine-resilient Federated Learning at IIT Bhubaneswar and hold an offer as an Incoming Software Engineer at TCS.
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <a href="#projects" className="text-sm font-medium underline underline-offset-4" style={{ color: C.cyan }}>See my projects</a>
+
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <a
+              href="#projects"
+              className="text-sm font-medium underline underline-offset-4"
+              style={{ color: C.cyan }}
+            >
+              See my Projects
+            </a>
+
             <span style={{ color: C.line }}>·</span>
-            <a href="#contact" className="text-sm font-medium underline underline-offset-4" style={{ color: C.cyan }}>Get in touch</a>
+
+            <a
+              href="#contact"
+              className="text-sm font-medium underline underline-offset-4"
+              style={{ color: C.cyan }}
+            >
+              Get in Touch
+            </a>
+
             <span style={{ color: C.line }}>·</span>
-            {/* Replace href with your actual resume file path, e.g. "/resume.pdf" */}
+
+            <a
+              href="https://my-linktree-bay.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium underline underline-offset-4"
+              style={{ color: C.cyan }}
+            >
+              My Links
+            </a>
+
+            <span style={{ color: C.line }}>·</span>
+
             <motion.a
               href="/resume.pdf"
               download
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 20,
+              }}
               className="inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full"
-              style={{ backgroundColor: "#F4F5F7", color: C.bg }}
+              style={{
+                backgroundColor: "#F4F5F7",
+                color: C.bg,
+              }}
             >
-              <Download size={14} /> Resume
+              <Download size={14} />
+              Resume
             </motion.a>
           </div>
         </motion.div>
@@ -252,7 +338,6 @@ function Hero() {
     </section>
   );
 }
-
 /* ---------------- featured work strip ---------------- */
 function Featured() {
   const items = [
@@ -708,18 +793,8 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="px-6 md:px-10 py-8 max-w-5xl mx-auto flex flex-col items-center gap-3 text-center" style={{ borderTop: `1px solid ${C.line}` }}>
-      <img src="/qr-linktree.svg" alt="Scan to open my links page" className="w-20 h-20 rounded-xl" />
+    <footer className="px-6 md:px-10 py-8 max-w-5xl mx-auto text-center" style={{ borderTop: `1px solid ${C.line}` }}>
       <div className="font-mono text-xs" style={{ color: C.muted }}>© {new Date().getFullYear()} Smruti Ranjan Pattanaik. All rights reserved.</div>
-      
-        href="https://my-linktree-bay.vercel.app/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-mono text-xs underline underline-offset-4"
-        style={{ color: C.cyan }}
-      >
-        More links →
-      </a>
     </footer>
   );
 }
